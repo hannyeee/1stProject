@@ -327,26 +327,6 @@
                   {
                     "type": "regex",
                     "options": {
-                      "pattern": "192\\.168\\.0\\.183:.*",
-                      "result": {
-                        "text": "183 · (이전) Grafana",
-                        "index": 14
-                      }
-                    }
-                  },
-                  {
-                    "type": "regex",
-                    "options": {
-                      "pattern": "192\\.168\\.0\\.186:.*",
-                      "result": {
-                        "text": "186 · (이전) Loki",
-                        "index": 15
-                      }
-                    }
-                  },
-                  {
-                    "type": "regex",
-                    "options": {
                       "pattern": "localhost:.*",
                       "result": {
                         "text": "187 · Prometheus",
@@ -671,30 +651,6 @@
               {
                 "id": "displayName",
                 "value": "189 · Loki · ${__field.labels.job}"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": ".*192\\.168\\.0\\.183:.*"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "183 · (이전) Grafana · ${__field.labels.job}"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": ".*192\\.168\\.0\\.186:.*"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "186 · (이전) Loki · ${__field.labels.job}"
               }
             ]
           },

@@ -61,4 +61,4 @@ postman collection run backend/tests/mypage.postman_collection.json --env-var ba
 
 새 마이그레이션 `0002 → 0003`의 적용·되돌리기·재적용은 격리 SQLite에서 검증했다.
 기존 `0002`의 외래키 ALTER는 SQLite에서 지원하지 않으므로 SQLite 신규 구축 시에는
-테스트처럼 SQLAlchemy 메타데이터로 기존 스키마를 구성해야 한다. 서비스 DB는 MySQL이다.
+테스트처럼 SQLAlchemy 메타데이터로 기존 스키마를 구성해야 한다. 서비스의 관계형 DB는 MariaDB이며 MySQL 호환 드라이버를 사용한다.

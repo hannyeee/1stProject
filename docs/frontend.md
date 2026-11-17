@@ -39,8 +39,7 @@ frontend/
 │     ├─ PasswordField.vue    비밀번호 입력 + 보기/숨기기
 │     └─ mypage/              계정·예매·찜·리포트·알림·탈퇴 패널
 ├─ public/                    그대로 복사되는 정적 파일
-├─ nginx/templates/default.conf.template   Docker용 nginx 설정
-└─ Dockerfile                 Node로 빌드 → nginx 이미지에 dist 복사 (2단계)
+└─ nginx/templates/default.conf.template   nginx 설정 템플릿 (BACKEND_UPSTREAM 치환 필요)
 ```
 
 ## 2. 화면과 주소
@@ -64,8 +63,8 @@ frontend/
 ### 메인
 - 추천 배너(3장), 카테고리 바로가기, 공연 카드 목록(인기순·공연일순·낮은 가격순, 더보기), MBTI 배너, 인기 랭킹
 - 검색·카테고리·정렬은 서버(`GET /performances`)에서 처리하고, 상태는 주소에 남깁니다. 그래서 로그인하고 돌아와도 보던 화면이 유지됩니다.
-- 공연 카드 → 예매 창: 날짜·회차·좌석 등급·수량 → 모의 결제 → 완료
-- 로그인하지 않은 상태에서 결제를 누르면, 고른 값을 sessionStorage(`tikit.pendingBooking`)에 잠시 저장하고 로그인 화면으로 이동합니다. 로그인(또는 가입) 후 결제 단계가 바로 다시 열립니다.
+- 공연 카드 → 예매 창: 날짜·회차·좌석 등급·수량 → 예매 확인·동의 → 예매 생성(결제 대기) → 별도 모의 결제
+- 로그인하지 않은 상태에서 예매하기를 누르면, 고른 값을 sessionStorage(`tikit.pendingBooking`)에 잠시 저장하고 로그인 화면으로 이동합니다. 로그인(또는 가입) 후 예매 확인 단계가 다시 열립니다. 상세 흐름은 [booking.md](booking.md)를 따릅니다.
 
 ### 마이페이지
 | 메뉴 그룹 | 항목 | 상태 |
@@ -105,9 +104,10 @@ frontend/
 ```powershell
 cd frontend
 npm install        # 처음 한 번
+$env:BACKEND_URL = "http://127.0.0.1:8000"  # 로컬 백엔드 사용
 npm run dev        # http://localhost:5173
 ```
-- `/api` 요청은 Vite 개발 서버가 `http://127.0.0.1:8000`으로 전달합니다(`vite.config.js`). 백엔드 CORS 설정은 필요 없습니다.
+- `/api` 요청은 Vite 개발 서버가 `BACKEND_URL`로 전달합니다. 위 예시는 로컬 백엔드를 사용하며, 변수를 생략한 현재 설정의 기본값은 `http://192.168.0.179:80`입니다. 프록시를 사용하므로 백엔드 CORS 설정은 필요 없습니다.
 - 백엔드 주소가 다르면 `$env:BACKEND_URL="http://주소:포트"; npm run dev`
 - 파일을 저장하면 화면이 바로 갱신됩니다.
 
@@ -132,14 +132,11 @@ npm run dev        # http://localhost:5173
 | `/login` 등에서 새로고침하면 404 | `try_files ... /index.html` 설정 누락 |
 | 빈 화면 + 콘솔에 MIME type 오류 | `include mime.types;` 누락 |
 
-### Docker로 실행
-```powershell
-cd frontend
-docker build -t tikit-frontend .
-docker run --rm -p 8080:80 tikit-frontend
-# 백엔드 주소가 다르면: docker run --rm -p 8080:80 -e BACKEND_UPSTREAM=backend:8000 tikit-frontend
-```
-이미지 안에서 `npm ci && npm run build`를 실행하므로 PC에 Node가 없어도 됩니다.
+### nginx 템플릿 사용
+
+저장소에는 `frontend/Dockerfile`이 없습니다. `nginx/templates/default.conf.template`은 참고 설정이며,
+일반 nginx에 적용할 때는 `${BACKEND_UPSTREAM}`을 실제 백엔드 주소로 치환합니다.
+배포 파일은 위의 `npm run build`로 생성합니다.
 
 ### 프록시 없이 백엔드에 직접 연결할 때
 `frontend/.env.local`에 `VITE_API_BASE=http://localhost:8000/api/v1`을 적고 다시 빌드합니다. 백엔드 CORS 기본값이 `http://localhost:5173`을 허용합니다.

@@ -1,6 +1,6 @@
 // =====================================================================
 // Alloy 로그 수집 설정 — nginx2 (192.168.0.178)
-// 관리: 저장소 monitoring/alloy/deployed/ 에서 생성. 직접 수정 시 저장소도 함께 반영.
+// 관리: 저장소 monitoring/deployed/alloy/ 에서 생성. 직접 수정 시 저장소도 함께 반영.
 // 메트릭은 Prometheus(187)가 node_exporter(:9100)를 직접 수집하므로 여기서는 로그만 보냅니다.
 // =====================================================================
 
@@ -20,6 +20,7 @@ loki.write "loki189" {
     host     = "nginx2",
     instance = "192.168.0.178",
     role     = "nginx",
+    service_name = "nginx",
   }
 }
 
@@ -82,7 +83,7 @@ loki.process "journal" {
 // ---------------------------------------------------------------------
 local.file_match "nginx" {
   path_targets = [
-    {"__path__" = "/var/log/nginx/access.log", "job" = "nginx", "log_type" = "access"},
+    {"__path__" = "/var/log/nginx/access.json.log", "job" = "nginx", "log_type" = "access"},
     {"__path__" = "/var/log/nginx/error.log",  "job" = "nginx", "log_type" = "error"},
   ]
 }
@@ -93,15 +94,24 @@ loki.source.file "nginx" {
 }
 
 loki.process "nginx" {
-  // 181 HAProxy 헬스체크: 192.168.0.181 "GET / HTTP/1.0" ... "-" "-"  (전체 로그의 대부분)
+  // monitoring/nginx/monitoring.conf의 JSON 접근 로그와 오류 로그를 함께 읽습니다.
+  stage.json {
+    expressions = {
+      uri = "",
+      ua = "http_user_agent",
+    }
+  }
+
+  // 181 HAProxy의 GET / 헬스체크 (사용자 에이전트 없음)
   stage.drop {
-    expression          = "^192\\.168\\.0\\.181 .*\"GET / HTTP/1\\.[01]\" \\d+ \\d+ \"-\" \"-\"$"
+    expression          = "\"uri\"\\s*:\\s*\"/\".*\"http_user_agent\"\\s*:\\s*\"-?\""
     drop_counter_reason = "healthcheck"
   }
 
   // 해시가 붙은 정적 파일 요청
   stage.drop {
-    expression          = "\"GET /(assets/|favicon\\.ico)"
+    source              = "uri"
+    expression          = "^/(assets/|favicon\\.ico)"
     drop_counter_reason = "static_asset"
   }
 

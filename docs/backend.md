@@ -27,7 +27,8 @@ backend/
 │     ├─ 0001_initial.py        최초 스키마 (5개 테이블)
 │     ├─ 0002_reservations.py    예매·결제·상태 이력 테이블
 │     ├─ 0003_notification_settings.py   계정별 알림 설정
-│     └─ 0004_admin_role.py      관리자 권한
+│     ├─ 0004_admin_role.py      관리자 권한
+│     └─ 0005_events_type_performance_index.py   업무 이벤트 집계용 복합 인덱스
 ├─ app/
 │  ├─ main.py                FastAPI 앱, CORS, 라우터 등록, /health
 │  ├─ core/
@@ -63,10 +64,10 @@ backend/
 
 | 테이블 | 기존 저장 위치 | 주요 컬럼 |
 |---|---|---|
-| `users` | `tikit.accounts` | id(UUID), name(닉네임), email(고유, 소문자), password_hash, mbti, consent, consented_at, created_at |
+| `users` | `tikit.accounts` | id(UUID), name(닉네임), email(고유, 소문자), password_hash, mbti, consent, consented_at, created_at, is_admin |
 | `performances` | `app.js`의 `shows` 배열 | id(`city` 등), category, title, english, sub, image, style, venue, date_label, start_date, days, price, badge, tag, slots(JSON) |
 | `orders` | `tikit.orders` | id, user_id, performance_id, performance_date, session_time, seat_grade, quantity, unit_price, amount, currency, payment_method, status, is_mock, created_at + 당시 공연명·분류·장소·MBTI 스냅샷 |
-| `events` | `tikit.events` | id, user_id(비로그인 시 NULL), mbti, type(`performance_view`/`mock_purchase`), performance_id, category, created_at |
+| `events` | `tikit.events` | id, user_id(비로그인 시 NULL), mbti, type(조회·예매 시작·요청·결제·취소), performance_id, reservation_id, category, created_at. 이름은 [이벤트 계약](eventTracking.md)을 따름 |
 | `favorites` | `tikit.favorites` | (user_id, performance_id) 복합 기본키, created_at |
 
 - `orders`, `events`, `favorites`의 `user_id`는 `ON DELETE CASCADE`로 연결되어 회원 탈퇴 시 함께 삭제됩니다.
@@ -185,7 +186,7 @@ copy .env.example .env
 .venv\Scripts\python -m uvicorn app.main:app --reload --port 8000
 ```
 
-> **`alembic.exe` 대신 `python -m alembic`을 사용하세요.** `.venv\Scripts\alembic upgrade head`로 실행하면 현재 폴더가 import 경로에 들어가지 않아 `app` 모듈을 찾지 못하고, 메시지 없이 실패합니다.
+> 이 문서의 명령은 `backend/`에서 `python -m alembic`으로 통일합니다. 인터프리터와 작업 디렉터리가 다르면 `app` import 오류가 날 수 있으므로 두 설정을 확인하세요.
 
 ### PyCharm에서 실행
 Run → Edit Configurations → `+` → Python

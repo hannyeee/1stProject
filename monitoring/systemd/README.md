@@ -1,13 +1,14 @@
 # systemd 리소스 상한 (drop-in)
 
-모니터링 프로세스가 같은 노트북의 FastAPI, nginx, HAProxy 자원을 빼앗지 않도록 상한을 겁니다.
+Windows 물리 PC 안의 Ubuntu VM에서 모니터링 프로세스의 사용량을 제한합니다.
+API 호스트에는 FastAPI·Prometheus·Grafana, 웹 호스트에는 Nginx·Loki가 있고 HAProxy는 각 PC에 1대씩 있습니다.
 
 | 파일 | 설치 위치 | 대상 VM |
 |---|---|---|
 | `alloy-limits.conf` | `/etc/systemd/system/alloy.service.d/limits.conf` | 모든 VM |
-| `prometheus-limits.conf` | `/etc/systemd/system/prometheus.service.d/limits.conf` | mon-metrics (184) |
-| `grafana-limits.conf` | `/etc/systemd/system/grafana-server.service.d/limits.conf` | mon-metrics (184) |
-| `loki-limits.conf` | `/etc/systemd/system/loki.service.d/limits.conf` | mon-logs (186) |
+| `prometheus-limits.conf` | `/etc/systemd/system/prometheus.service.d/limits.conf` | Prometheus 187 |
+| `grafana-limits.conf` | `/etc/systemd/system/grafana-server.service.d/limits.conf` | Grafana 188 |
+| `loki-limits.conf` | `/etc/systemd/system/loki.service.d/limits.conf` | Loki 189 |
 
 ```bash
 sudo mkdir -p /etc/systemd/system/alloy.service.d

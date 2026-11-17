@@ -3,12 +3,12 @@
 이 문서는 가상 사용자 프로필의 형식·생성·확장 규칙을 관리한다.
 행동 이벤트 계약은 [eventTracking.md](eventTracking.md), 실제 가입·행동 생성과
 과거 기록 보존은 [playwrightGuide.md](playwrightGuide.md)를 따른다.
-부하 조건과 실측 결과는 [계획](loadTestPlan.md)·[결과](loadTestResult.md)에 있다.
+부하 조건과 실측 결과는 [계획](loadTestPlan.md)·[결과](loadTestResult02.md)에 있다.
 
 ## 현재 데이터와 생성기
 
-- `../syntheticData/personas.json`: 최초 100명을 보존해 총 300명으로 확장한 프로필.
-- `../syntheticData/generatePersonas.py`: Python 표준 라이브러리로 프로필 생성·검증.
+- `../users/personas.json`: 최초 100명을 보존해 총 300명으로 확장한 프로필.
+- `../users/generatePersonas.py`: Python 표준 라이브러리로 프로필 생성·검증.
 - 메타데이터: `schema_version=1.1`, `generator_version=1.2`, `seed=42`,
   `synthetic=true`, `count=300`, `expansion_version=append-v1`.
 - 프로필 파일에 사람이 추가되는 것과 실제 서비스 회원가입은 별개다.
@@ -67,8 +67,8 @@ MBTI와 페르소나는 독립적으로 균등 배정한다. 모든 MBTI×페르
 내보낸다. 기존 `personas.json`을 자동 갱신하지 않고 `--output` 옵션도 없다.
 
 ```powershell
-python syntheticData/generatePersonas.py --count 100 --seed 42
-python -m unittest discover -s syntheticData -p "test*.py"
+python users/generatePersonas.py --count 100 --seed 42
+python -m unittest discover -s users -p "test*.py"
 ```
 
 동일한 Python·생성기 버전·인원·시드에서 같은 결과를 생성한다.
@@ -76,8 +76,8 @@ python -m unittest discover -s syntheticData -p "test*.py"
 서로 다른 실행 간 이메일·이름 중복은 보장하지 않으며, 인원을 바꿔 재생성한 결과가
 기존 프로필을 그대로 포함한다고 가정하면 안 된다.
 
-기존 프로필을 늘릴 때는 `expand_personas(data, target, seed=42)`와
-`../syntheticData/playwright/loadPreparation.py`를 사용한다.
+기존 프로필을 늘릴 때는 `../users/generatePersonas.py`의
+`expand_personas(data, target, seed=42)` 함수를 사용한다. 호출자가 결과를 검증한 뒤 별도로 저장해야 한다.
 기존 배열·신원을 보존해 신규 프로필만 추가하고, 같은 목표 인원으로 반복해도 추가되지 않는다.
 인원을 줄여 기존 사용자를 버리는 요청은 거절한다.
 현재 300명 파일을 생성기 `--count 300` 출력으로 덮어쓰지 않는다.

@@ -1,6 +1,6 @@
 // =====================================================================
 // Alloy 로그 수집 설정 — grafana (192.168.0.188)
-// 관리: 저장소 monitoring/alloy/deployed/ 에서 생성. 직접 수정 시 저장소도 함께 반영.
+// 관리: 저장소 monitoring/deployed/alloy/ 에서 생성. 직접 수정 시 저장소도 함께 반영.
 // 메트릭은 Prometheus(187)가 node_exporter(:9100)를 직접 수집하므로 여기서는 로그만 보냅니다.
 // =====================================================================
 
@@ -19,7 +19,8 @@ loki.write "loki189" {
   external_labels = {
     host     = "grafana",
     instance = "192.168.0.188",
-    role     = "monitoring",
+    role     = "grafana",
+    service_name = "grafana",
   }
 }
 

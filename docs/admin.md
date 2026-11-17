@@ -27,7 +27,7 @@ python -m app.db.grant_admin admin@example.com
 마이그레이션 `0004`는 `users.is_admin` Boolean 컬럼 하나를 추가합니다.
 기존 회원과 신규 가입 회원은 기본적으로 일반 회원(`false`)입니다.
 공연·예매·결제 테이블의 구조는 바꾸지 않습니다.
-이 구현 작업에서 실제 서버 DB 마이그레이션이나 계정 승격은 실행하지 않았습니다.
+아래 검증 이력은 11월 5일 구현 작업 당시 기록이며 현재 실서버의 마이그레이션·관리자 지정 여부를 뜻하지 않습니다.
 
 ## 권한 처리
 
@@ -96,7 +96,7 @@ python -m app.db.grant_admin admin@example.com
 - `frontend/src/components/admin/PerformanceForm.vue`: 등록·수정과 카드 미리보기
 - `frontend/src/composables/useAdminApi.js`: 관리자 권한 회수 처리
 
-사용자 요청에 따라 화면 실행, 기능 테스트, 빌드, 실제 DB 반영은 생략했습니다.
+11월 5일 구현 작업에서는 당시 사용자 요청에 따라 화면 실행, 기능 테스트, 빌드, 실제 DB 반영을 생략했습니다.
 정적 코드 리뷰와 Python 10개 파일·Vue 3개 컴포넌트·JavaScript 5개 모듈의 문법 검사는 수행했습니다.
 관리자 권한 경계, 입력 검증, 삭제 시 예매 이력 보호, 기존 회원·예매 기능의 회귀 여부는
 DB 마이그레이션 후 별도로 확인해야 합니다.

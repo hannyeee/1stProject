@@ -1,21 +1,122 @@
-# /etc/prometheus/prometheus.yml (mon-metrics, 192.168.0.184)
-#
-# 수집은 각 VM의 Alloy 가 담당하고 remote_write 로 밀어 넣습니다.
-# 이 파일에는 Prometheus 자기 자신과 recording rule 만 둡니다.
-# 실행 옵션은 prometheus.default 를 참고하세요.
-
+# /etc/prometheus/prometheus.yml - Prometheus 192.168.0.187
+# Pull metrics directly; Alloy sends logs only.
 global:
   scrape_interval: 30s
   scrape_timeout: 10s
   evaluation_interval: 30s
-
 rule_files:
-  - /etc/prometheus/rules/*.yml
-
+- /etc/prometheus/rules/*.yml
 scrape_configs:
-  - job_name: prometheus
-    scrape_interval: 60s
-    static_configs:
-      - targets: ["localhost:9090"]
-        labels:
-          host: mon-metrics184
+- job_name: node
+  static_configs:
+  - targets:
+    - 192.168.0.171:9100
+    labels:
+      host: mariadb1
+      role: mariadb
+  - targets:
+    - 192.168.0.172:9100
+    labels:
+      host: mariadb2
+      role: mariadb
+  - targets:
+    - 192.168.0.173:9100
+    labels:
+      host: mariadb3
+      role: mariadb
+  - targets:
+    - 192.168.0.174:9100
+    labels:
+      host: mongodb
+      role: mongodb
+  - targets:
+    - 192.168.0.175:9100
+    labels:
+      host: fastapi1
+      role: fastapi
+  - targets:
+    - 192.168.0.176:9100
+    labels:
+      host: fastapi2
+      role: fastapi
+  - targets:
+    - 192.168.0.177:9100
+    labels:
+      host: nginx1
+      role: nginx
+  - targets:
+    - 192.168.0.178:9100
+    labels:
+      host: nginx2
+      role: nginx
+  - targets:
+    - 192.168.0.179:9100
+    labels:
+      host: haproxy-backend
+      role: haproxy
+  - targets:
+    - 192.168.0.180:9100
+    labels:
+      host: haproxy-db
+      role: haproxy
+  - targets:
+    - 192.168.0.181:9100
+    labels:
+      host: haproxy-frontend
+      role: haproxy
+  - targets:
+    - 192.168.0.187:9100
+    labels:
+      host: prometheus
+      role: prometheus
+  - targets:
+    - 192.168.0.188:9100
+    labels:
+      host: grafana
+      role: grafana
+  - targets:
+    - 192.168.0.189:9100
+    labels:
+      host: loki
+      role: loki
+- job_name: mariadb
+  static_configs:
+  - targets:
+    - 192.168.0.171:9104
+    labels:
+      host: mariadb1
+  - targets:
+    - 192.168.0.172:9104
+    labels:
+      host: mariadb2
+  - targets:
+    - 192.168.0.173:9104
+    labels:
+      host: mariadb3
+- job_name: mongodb
+  static_configs:
+  - targets:
+    - 192.168.0.174:9216
+    labels:
+      host: mongodb
+- job_name: prometheus
+  scrape_interval: 60s
+  static_configs:
+  - targets:
+    - 192.168.0.187:9090
+    labels:
+      host: prometheus
+- job_name: grafana
+  scrape_interval: 60s
+  static_configs:
+  - targets:
+    - 192.168.0.188:3000
+    labels:
+      host: grafana
+- job_name: loki
+  scrape_interval: 60s
+  static_configs:
+  - targets:
+    - 192.168.0.189:3100
+    labels:
+      host: loki

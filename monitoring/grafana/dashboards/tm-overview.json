@@ -716,30 +716,6 @@
           {
             "matcher": {
               "id": "byRegexp",
-              "options": ".*192\\.168\\.0\\.183:.*"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "183 · (이전) Grafana · ${__field.labels.job}"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": ".*192\\.168\\.0\\.186:.*"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "186 · (이전) Loki · ${__field.labels.job}"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
               "options": "^localhost:.*"
             },
             "properties": [
@@ -1027,30 +1003,6 @@
           {
             "matcher": {
               "id": "byRegexp",
-              "options": ".*192\\.168\\.0\\.183:.*"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "183 · (이전) Grafana"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": ".*192\\.168\\.0\\.186:.*"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "186 · (이전) Loki"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
               "options": "^localhost:.*"
             },
             "properties": [
@@ -1323,30 +1275,6 @@
           {
             "matcher": {
               "id": "byRegexp",
-              "options": ".*192\\.168\\.0\\.183:.*"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "183 · (이전) Grafana"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": ".*192\\.168\\.0\\.186:.*"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "186 · (이전) Loki"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
               "options": "^localhost:.*"
             },
             "properties": [
@@ -1598,30 +1526,6 @@
               {
                 "id": "displayName",
                 "value": "189 · Loki"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": ".*192\\.168\\.0\\.183:.*"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "183 · (이전) Grafana"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": ".*192\\.168\\.0\\.186:.*"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "186 · (이전) Loki"
               }
             ]
           },
@@ -1885,30 +1789,6 @@
           {
             "matcher": {
               "id": "byRegexp",
-              "options": ".*192\\.168\\.0\\.183:.*"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "183 · (이전) Grafana"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": ".*192\\.168\\.0\\.186:.*"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "186 · (이전) Loki"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
               "options": "^localhost:.*"
             },
             "properties": [
@@ -2162,30 +2042,6 @@
               {
                 "id": "displayName",
                 "value": "189 · Loki"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": ".*192\\.168\\.0\\.183:.*"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "183 · (이전) Grafana"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": ".*192\\.168\\.0\\.186:.*"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "186 · (이전) Loki"
               }
             ]
           },
@@ -2556,26 +2412,6 @@
                       "result": {
                         "text": "189 · Loki",
                         "index": 13
-                      }
-                    }
-                  },
-                  {
-                    "type": "regex",
-                    "options": {
-                      "pattern": "192\\.168\\.0\\.183:.*",
-                      "result": {
-                        "text": "183 · (이전) Grafana",
-                        "index": 14
-                      }
-                    }
-                  },
-                  {
-                    "type": "regex",
-                    "options": {
-                      "pattern": "192\\.168\\.0\\.186:.*",
-                      "result": {
-                        "text": "186 · (이전) Loki",
-                        "index": 15
                       }
                     }
                   },

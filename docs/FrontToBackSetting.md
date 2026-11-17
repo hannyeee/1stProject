@@ -12,6 +12,10 @@
 최신 IP·서버 역할·담당자는 [networkInfo.md](networkInfo.md)를 기준으로 합니다.
 이 문서는 연결·배포 절차를 관리하며 자원 구성과 미확정 사항은 [serverSpec.md](serverSpec.md)를 참고합니다.
 아래 최초 점검 기록은 2026-11-06 당시 상태로, 현재 서버 기동 여부를 뜻하지 않습니다.
+이 문서의 HTTP 연결은 최초 구성이고 8장의 외부 HTTPS 적용이 후속 기록입니다.
+8-5의 내부 TLS는 선택 제안으로, 적용 완료를 뜻하지 않습니다.
+11월 9일 DB 프록시 구성 결정은 [ADR-003](adr/003-dbConfiguration.md)을 따르며,
+아래 171 직접 접속 예시는 11월 6일 당시 기록입니다. ADR-003의 DB 프록시 구성 결정과 실제 적용 여부는 구분합니다.
 
 ---
 
@@ -51,7 +55,7 @@ flowchart LR
 
 공통 확인 사항
 
-- 6대 모두 `ufw` 비활성 → 방화벽 작업 불필요
+- 당시 6대 모두 `ufw` 비활성이었음. 현재 접근 제어 필요 여부를 이 기록으로 판단하지 않음
 - 175·176 → MariaDB(171:3306), MongoDB(174:27017), 179:80 **연결 가능**
 - 177·178·181 의 호스트명이 모두 `test` 로 동일
 
@@ -128,7 +132,7 @@ python3 -c "import secrets; print(secrets.token_urlsafe(48))"
 
 ```bash
 # 로컬 저장소의 backend 디렉터리에서 (.env 의 DATABASE_URL 이 171을 가리키는 상태)
-alembic upgrade head
+python -m alembic upgrade head
 ```
 
 ### 1-5. 수동 실행으로 확인
@@ -745,7 +749,7 @@ done
 
 ### 8-7. 인증서 갱신 (ZeroSSL, 90일)
 
-현재 인증서 만료일: **2027-01-13** — 만료 2주 전까지 갱신합니다.
+2026-11-06 점검 기록의 인증서 만료일: **2027-01-13**. 현재 인증서의 유효기간은 위 점검 명령으로 다시 확인하고 만료 전에 갱신합니다.
 
 1. ZeroSSL 에서 `www.yaaho.kro.kr` 인증서를 재발급하고 `certificate.crt`, `ca_bundle.crt`, `private.key` 를 받습니다.
 2. 181 의 `/home/test/ssl/` 에 덮어씁니다 (`private.key` 는 `chmod 600`).

@@ -2,23 +2,27 @@
 import os
 
 OUT = os.path.dirname(os.path.abspath(__file__))
-os.makedirs(OUT, exist_ok=True)
 
 HOSTS = {
+    "171": ("mariadb1", "mariadb"),
+    "172": ("mariadb2", "mariadb"),
+    "173": ("mariadb3", "mariadb"),
+    "174": ("mongodb", "mongodb"),
     "175": ("fastapi1", "fastapi"),
     "176": ("fastapi2", "fastapi"),
     "177": ("nginx1", "nginx"),
     "178": ("nginx2", "nginx"),
     "179": ("haproxy-backend", "haproxy"),
+    "180": ("haproxy-db", "haproxy"),
     "181": ("haproxy-frontend", "haproxy"),
-    "187": ("prometheus", "monitoring"),
-    "188": ("grafana", "monitoring"),
-    "189": ("loki", "monitoring"),
+    "187": ("prometheus", "prometheus"),
+    "188": ("grafana", "grafana"),
+    "189": ("loki", "loki"),
 }
 
 COMMON = r'''// =====================================================================
 // Alloy 로그 수집 설정 — {host} (192.168.0.{ip})
-// 관리: 저장소 monitoring/alloy/deployed/ 에서 생성. 직접 수정 시 저장소도 함께 반영.
+// 관리: 저장소 monitoring/deployed/alloy/ 에서 생성. 직접 수정 시 저장소도 함께 반영.
 // 메트릭은 Prometheus(187)가 node_exporter(:9100)를 직접 수집하므로 여기서는 로그만 보냅니다.
 // =====================================================================
 
@@ -38,6 +42,7 @@ loki.write "loki189" {{
     host     = "{host}",
     instance = "192.168.0.{ip}",
     role     = "{role}",
+    service_name = "{role}",
   }}
 }}
 
@@ -102,7 +107,7 @@ NGINX = r'''
 // ---------------------------------------------------------------------
 local.file_match "nginx" {
   path_targets = [
-    {"__path__" = "/var/log/nginx/access.log", "job" = "nginx", "log_type" = "access"},
+    {"__path__" = "/var/log/nginx/access.json.log", "job" = "nginx", "log_type" = "access"},
     {"__path__" = "/var/log/nginx/error.log",  "job" = "nginx", "log_type" = "error"},
   ]
 }
@@ -113,15 +118,24 @@ loki.source.file "nginx" {
 }
 
 loki.process "nginx" {
-  // 181 HAProxy 헬스체크: 192.168.0.181 "GET / HTTP/1.0" ... "-" "-"  (전체 로그의 대부분)
+  // monitoring/nginx/monitoring.conf의 JSON 접근 로그와 오류 로그를 함께 읽습니다.
+  stage.json {
+    expressions = {
+      uri = "",
+      ua = "http_user_agent",
+    }
+  }
+
+  // 181 HAProxy의 GET / 헬스체크 (사용자 에이전트 없음)
   stage.drop {
-    expression          = "^192\\.168\\.0\\.181 .*\"GET / HTTP/1\\.[01]\" \\d+ \\d+ \"-\" \"-\"$"
+    expression          = "\"uri\"\\s*:\\s*\"/\".*\"http_user_agent\"\\s*:\\s*\"-?\""
     drop_counter_reason = "healthcheck"
   }
 
   // 해시가 붙은 정적 파일 요청
   stage.drop {
-    expression          = "\"GET /(assets/|favicon\\.ico)"
+    source              = "uri"
+    expression          = "^/(assets/|favicon\\.ico)"
     drop_counter_reason = "static_asset"
   }
 
@@ -154,12 +168,25 @@ loki.process "haproxy" {
 }
 '''
 
-for ip, (host, role) in HOSTS.items():
-    body = COMMON.format(host=host, ip=ip, role=role)
-    if role == "nginx":
-        body += NGINX
-    if role == "haproxy":
-        body += HAPROXY
-    with open(os.path.join(OUT, f"{ip}-{host}.alloy"), "w", encoding="utf-8", newline="\n") as f:
-        f.write(body)
-    print(ip, host, role)
+def render_configs():
+    configs = {}
+    for ip, (host, role) in HOSTS.items():
+        body = COMMON.format(host=host, ip=ip, role=role)
+        if role == "nginx":
+            body += NGINX
+        if role == "haproxy":
+            body += HAPROXY
+        configs[f"{ip}-{host}.alloy"] = body
+    return configs
+
+
+def main():
+    os.makedirs(OUT, exist_ok=True)
+    for name, body in render_configs().items():
+        with open(os.path.join(OUT, name), "w", encoding="utf-8", newline="\n") as stream:
+            stream.write(body)
+        print(name)
+
+
+if __name__ == "__main__":
+    main()
