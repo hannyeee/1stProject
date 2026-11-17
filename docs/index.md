@@ -22,6 +22,7 @@
 | 가상 프로필 구조·생성·확장 규칙 | [personaDataDesign.md](personaDataDesign.md) |
 | 홈 화면의 기존 디자인 기준 | [homeDesign.md](homeDesign.md) |
 | 커밋 메시지 규칙 | [gitCommitConvention.md](gitCommitConvention.md) |
+| 평가 피드백 기반 개선 우선순위·완료 기준 | [improvementPlan.md](improvementPlan.md) |
 
 ## 테스트 실행 안내
 
@@ -36,7 +37,7 @@
 문서 회차는 실행 시작 시각(KST) 순이다. 1차와 2차는 서로 다른 실행기로 진행되어 시간이 겹친다.
 각 회차는 대표 실행 기준이며 본문에 별도 실행 ID의 재시도·단독 검사가 포함될 수 있다.
 실행 ID와 `full3` 같은 원본 기록의 이름은 실제 실행 기록을 대조할 수 있도록 각 문서에 유지한다.
-최종 개선 상태의 전체 검증 결과는 **[10차 결과](loadTestResult10.md)**에서 확인한다.
+최종 개선 상태의 전체 검증 결과는 [10차 결과](loadTestResult10.md)에서 확인한다.
 
 | 회차 | 실행 시작(KST) | 테스트 내용 | 결과 문서 |
 | --- | --- | --- | --- |
