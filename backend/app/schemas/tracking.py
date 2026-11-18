@@ -52,6 +52,7 @@ class TrackingEventIn(BaseModel):
 
 class TrackingBatchIn(BaseModel):
     events: list[TrackingEventIn] = Field(min_length=1, max_length=TRACKING_MAX_BATCH)
+    require_authentication: bool = False
 
 
 class TrackingBatchOut(BaseModel):

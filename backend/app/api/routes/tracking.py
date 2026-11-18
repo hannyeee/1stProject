@@ -16,7 +16,6 @@ DUPLICATE_KEY = 11000
 
 
 def _user_id(creds: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)]) -> str | None:
-    # 토큰이 만료·위조돼도 이벤트를 버리지 않고 비회원 이벤트로 저장합니다.
     # 사용자 id 는 클라이언트가 보낸 값이 아니라 서명이 검증된 토큰에서만 가져옵니다.
     return decode_access_token(creds.credentials) if creds else None
 
@@ -28,6 +27,12 @@ def collect_events(
     user_id: Annotated[str | None, Depends(_user_id)],
     user_agent: Annotated[str | None, Header()] = None,
 ):
+    if body.require_authentication and user_id is None:
+        raise HTTPException(
+            status.HTTP_401_UNAUTHORIZED,
+            "회원 이벤트를 수집하려면 유효한 인증이 필요합니다.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     received_at = datetime.now(timezone.utc)
     docs = []
     for e in body.events:
@@ -48,7 +53,7 @@ def collect_events(
         events.insert_many(docs, ordered=False)
     except BulkWriteError as exc:
         errors = exc.details.get("writeErrors", [])
-        if any(err.get("code") != DUPLICATE_KEY for err in errors):
+        if exc.details.get("writeConcernErrors") or any(err.get("code") != DUPLICATE_KEY for err in errors):
             raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "이벤트를 저장하지 못했습니다.") from exc
         return TrackingBatchOut(accepted=len(docs) - len(errors), duplicates=len(errors))
     except PyMongoError as exc:

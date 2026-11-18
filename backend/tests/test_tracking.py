@@ -83,6 +83,16 @@ def test_invalid_token_is_ignored_instead_of_losing_events(client, events):
     assert events.docs[event["event_id"]]["user_id"] is None
 
 
+def test_member_batch_requires_valid_authentication(client, events, auth):
+    event = make_event()
+    body = {"events": [event], "require_authentication": True}
+    assert client.post(API, json=body).status_code == 401
+    assert client.post(API, json=body, headers={"Authorization": "Bearer expired-or-garbage"}).status_code == 401
+    assert events.docs == {}
+    assert client.post(API, json=body, headers=auth).status_code == 202
+    assert events.docs[event["event_id"]]["user_id"] == client.get("/api/v1/users/me", headers=auth).json()["id"]
+
+
 def test_resent_events_are_counted_as_duplicates(client, events):
     event = make_event()
     client.post(API, json={"events": [event]})
@@ -114,3 +124,9 @@ def test_storage_outage_returns_503_so_client_can_retry(client):
     finally:
         app.dependency_overrides.pop(get_event_collection, None)
     assert r.status_code == 503
+
+
+def test_unconfirmed_write_returns_503_so_client_keeps_pending_events(client, events):
+    events.fail = BulkWriteError({"writeErrors": [], "writeConcernErrors": [{"code": 64}], "nInserted": 1})
+    response = client.post(API, json={"events": [make_event()]})
+    assert response.status_code == 503

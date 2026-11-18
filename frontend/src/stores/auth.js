@@ -18,7 +18,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isAdmin = computed(() => profile.value?.is_admin === true);
 
   function start(result) {
-    tracker.flush(); // 로그인 전에 쌓인 이벤트는 비회원 이벤트로 먼저 보냅니다.
+    tracker.flush(); // 이전 인증 상태에서 전송할 수 있는 이벤트를 먼저 보냅니다.
     token.value = result.access_token;
     session.set(TOKEN_KEY, token.value);
     profile.value = result.user;
@@ -43,7 +43,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function logout() {
-    tracker.flush(); // 로그아웃 전까지 쌓인 이벤트는 지금 토큰으로 보내 회원 이벤트로 남깁니다.
+    tracker.flush(); // 현재 계정의 이벤트를 먼저 보내고, 남은 건은 같은 계정의 재로그인까지 보관합니다.
     token.value = null;
     profile.value = null;
     session.remove(TOKEN_KEY);
